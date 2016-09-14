@@ -109,7 +109,6 @@ bestell.createLogin = function()
 	loginButton.type = "button"; 
 	loginButton.value = "Login"; 
 	buttonDiv.appendChild(loginButton);
-
 }
 
 bestell.createFrame();
