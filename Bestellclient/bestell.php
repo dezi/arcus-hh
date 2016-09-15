@@ -103,7 +103,7 @@ bestell.createJobs = function()
 
 	var workDiv = document.createElement("div");
 	workDiv.style.position = "relative"; 
-	workDiv.style.width = "800px"; 
+	workDiv.style.width = "100%"; 
 	workDiv.style.height = "100%"; 
 	workDiv.style.border = "1px solid grey"; 
 	centerDiv.appendChild(workDiv);
