@@ -105,12 +105,41 @@ bestell.createJobs = function()
 	workDiv.appendChild(jobsLeg);
 	
 	var jobsTitle = document.createElement("center");
-	jobsTitle.style.padding = "16px";
+	jobsTitle.style.padding = "15px";
+	jobsTitle.style.position = "absolute";
+	jobsTitle.style.top = "0px";
+	jobsTitle.style.left = "0px";
+	jobsTitle.style.right = "0px";
+	jobsTitle.style.height = "29px";
 	jobsTitle.style.borderBottom = "1px solid grey";
-	jobsTitle.style.backgroundColor = "#cccccc";
+	jobsTitle.style.backgroundColor = "#bbbbbb";
 	jobsTitle.innerHTML = "Aufträge";
 	jobsLeg.appendChild(jobsTitle);
+	
+	var jobsNew = document.createElement("div");
+	jobsNew.style.padding = "15px";
+	jobsNew.style.position = "absolute";
+	jobsNew.style.top = "0px";
+	jobsNew.style.right = "0px";
+	jobsNew.style.height = "30px";
+	jobsNew.style.backgroundColor = "#888888";
+	jobsNew.innerHTML = "+";
+	jobsNew.onclick = bestell.addJob;
+	jobsLeg.appendChild(jobsNew);
 
+	var jobsContent = document.createElement("div");
+	jobsContent.style.overflowX = "hidden";
+	jobsContent.style.overflowY = "auto";
+	jobsContent.style.position = "absolute";
+	jobsContent.style.left = "0px";
+	jobsContent.style.top = "60px";
+	jobsContent.style.right = "0px";
+	jobsContent.style.bottom = "0px";
+	jobsContent.style.backgroundColor = "#ffffff";
+	jobsLeg.appendChild(jobsContent);
+	
+	bestell.jobsContent = jobsContent;
+	
 	var itemsLeg = document.createElement("div");
 	itemsLeg.style.borderLeft = "1px solid grey";
 	itemsLeg.style.borderRight = "1px solid grey";
@@ -123,15 +152,70 @@ bestell.createJobs = function()
 	workDiv.appendChild(itemsLeg);
 	
 	var itemsTitle = document.createElement("center");
-	itemsTitle.style.padding = "16px";
+	itemsTitle.style.padding = "15px";
+	itemsTitle.style.position = "absolute";
+	itemsTitle.style.top = "0px";
+	itemsTitle.style.left = "0px";
+	itemsTitle.style.right = "0px";
+	itemsTitle.style.height = "29px";
 	itemsTitle.style.borderBottom = "1px solid grey";
-	itemsTitle.style.backgroundColor = "#cccccc";
+	itemsTitle.style.backgroundColor = "#bbbbbb";
 	itemsTitle.innerHTML = "Artikel";
 	itemsLeg.appendChild(itemsTitle);
 
+	var itemsNew = document.createElement("div");
+	itemsNew.style.padding = "15px";
+	itemsNew.style.position = "absolute";
+	itemsNew.style.top = "0px";
+	itemsNew.style.right = "0px";
+	itemsNew.style.height = "30px";
+	itemsNew.style.backgroundColor = "#888888";
+	itemsNew.innerHTML = "+";
+	itemsNew.onclick = bestell.addItem;
+	itemsLeg.appendChild(itemsNew);
+}
 
+bestell.addItem = function()
+{
+}
+
+bestell.addJob = function()
+{
+	var job = {};
 	
+	job.date = new Date().getTime() / 1000;
+	job.name = bestell.fullDateString(job.date);
+	job.send = false;
+
+	bestell.context.jobs.unshift(job);
 	
+	bestell.updateJobs();
+}
+
+bestell.updateJobs = function()
+{
+	var jobsContent = bestell.jobsContent;
+
+	jobsContent.innerHTML = null;
+	
+	var jobs = bestell.context.jobs;
+	
+	for (var inx = 0; inx < jobs.length; inx++)
+	{
+		var job = jobs[ inx ];
+		
+		var jobDiv = document.createElement("div");
+		jobDiv.style.position = "relative";
+		jobDiv.style.height = "50px";
+		jobDiv.style.borderBottom = "1px solid grey";
+		jobDiv.style.backgroundColor = job.send ? "#ddffdd" : "#ffdddd";
+		jobsContent.appendChild(jobDiv);
+		
+		var jobDate = document.createElement("center");
+		jobDiv.style.lineHeight = "50px";
+		jobDate.innerHTML = bestell.fullDateHuman(job.date)
+		jobDiv.appendChild(jobDate);
+	}
 }
 
 bestell.createLogin = function()
@@ -211,6 +295,30 @@ bestell.zeroPadStringLeft = function(str, digits)
 	}
 	
 	return str;
+}
+
+bestell.fullDateString = function(timestamp)
+{
+	var date = new Date(timestamp * 1000);
+	
+	var day = date.getDate();
+	var month = date.getMonth() + 1;
+	var year = date.getFullYear();
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	
+	var dst = bestell.zeroPadStringLeft(year, 4)
+			+ "_"
+			+ bestell.zeroPadStringLeft(month, 2)
+			+ "_"
+			+ bestell.zeroPadStringLeft(day, 4)
+			+ "_"
+			+ bestell.zeroPadStringLeft(hour, 2)
+			+ "_"
+			+ bestell.zeroPadStringLeft(minute, 2)
+			;
+		
+	return dst;
 }
 
 bestell.fullDateHuman = function(timestamp)
