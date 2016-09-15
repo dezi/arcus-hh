@@ -38,6 +38,7 @@ bestell.createHeader = function()
 {
 	var headerDiv = document.createElement("div");
 	
+	bestell.unselect(headerDiv);
 	headerDiv.style.position = "absolute";
 	headerDiv.style.top = "0px";
 	headerDiv.style.left = "0px";
@@ -46,7 +47,7 @@ bestell.createHeader = function()
 	headerDiv.style.padding = "20px";
 	headerDiv.style.backgroundColor = "#ddddff";
 	document.body.appendChild(headerDiv);
-	
+
 	var logoDiv = document.createElement("div");
 	
 	logoDiv.style.position = "absolute";
@@ -79,13 +80,25 @@ bestell.createHeader = function()
 	bestell.userDiv = userDiv;
 }
 
+bestell.unselect = function(elem)
+{
+	elem.style.setProperty( "-webkit-touch-callout", "none");
+    elem.style.setProperty( "-webkit-user-select", "none");
+    elem.style.setProperty( "-khtml-user-select", "none");
+    elem.style.setProperty( "-moz-user-select", "none");
+    elem.style.setProperty( "-ms-user-select", "none");
+    elem.style.setProperty( "-user-select", "none");
+}
+
 bestell.createJobs = function()
 {
 	bestell.contDiv.innerHTML = null;
 	
 	var centerDiv = document.createElement("center");
+	bestell.unselect(centerDiv);
 	centerDiv.style.fontSize = "24px"; 
-	centerDiv.style.height = "100%"; 
+	centerDiv.style.lineHeight = "30px"; 
+	centerDiv.style.height = "100%";
 	bestell.contDiv.appendChild(centerDiv);
 
 	var workDiv = document.createElement("div");
@@ -99,25 +112,25 @@ bestell.createJobs = function()
 	jobsLeg.style.position = "absolute"; 
 	jobsLeg.style.top = "0px"; 
 	jobsLeg.style.left = "0%"; 
-	jobsLeg.style.width = "50%"; 
+	jobsLeg.style.width = "30%"; 
 	jobsLeg.style.bottom = "0px"; 
 	jobsLeg.style.backgroundColor = "#ffffee";
 	workDiv.appendChild(jobsLeg);
 	
 	var jobsTitle = document.createElement("center");
-	jobsTitle.style.padding = "15px";
+	jobsTitle.style.padding = "10px";
 	jobsTitle.style.position = "absolute";
 	jobsTitle.style.top = "0px";
 	jobsTitle.style.left = "0px";
-	jobsTitle.style.right = "0px";
+	jobsTitle.style.right = "30px";
 	jobsTitle.style.height = "29px";
 	jobsTitle.style.borderBottom = "1px solid grey";
 	jobsTitle.style.backgroundColor = "#bbbbbb";
 	jobsTitle.innerHTML = "Aufträge";
 	jobsLeg.appendChild(jobsTitle);
-	
+
 	var jobsNew = document.createElement("div");
-	jobsNew.style.padding = "15px";
+	jobsNew.style.padding = "10px";
 	jobsNew.style.position = "absolute";
 	jobsNew.style.top = "0px";
 	jobsNew.style.right = "0px";
@@ -132,7 +145,7 @@ bestell.createJobs = function()
 	jobsContent.style.overflowY = "auto";
 	jobsContent.style.position = "absolute";
 	jobsContent.style.left = "0px";
-	jobsContent.style.top = "60px";
+	jobsContent.style.top = "50px";
 	jobsContent.style.right = "0px";
 	jobsContent.style.bottom = "0px";
 	jobsContent.style.backgroundColor = "#ffffff";
@@ -145,18 +158,18 @@ bestell.createJobs = function()
 	itemsLeg.style.borderRight = "1px solid grey";
 	itemsLeg.style.position = "absolute"; 
 	itemsLeg.style.top = "0px"; 
-	itemsLeg.style.left = "50%"; 
-	itemsLeg.style.width = "50%"; 
+	itemsLeg.style.left = "30%"; 
+	itemsLeg.style.width = "70%"; 
 	itemsLeg.style.bottom = "0px"; 
 	itemsLeg.style.backgroundColor = "#ffeeff";
 	workDiv.appendChild(itemsLeg);
 	
 	var itemsTitle = document.createElement("center");
-	itemsTitle.style.padding = "15px";
+	itemsTitle.style.padding = "10px";
 	itemsTitle.style.position = "absolute";
 	itemsTitle.style.top = "0px";
 	itemsTitle.style.left = "0px";
-	itemsTitle.style.right = "0px";
+	itemsTitle.style.right = "30px";
 	itemsTitle.style.height = "29px";
 	itemsTitle.style.borderBottom = "1px solid grey";
 	itemsTitle.style.backgroundColor = "#bbbbbb";
@@ -164,7 +177,7 @@ bestell.createJobs = function()
 	itemsLeg.appendChild(itemsTitle);
 
 	var itemsNew = document.createElement("div");
-	itemsNew.style.padding = "15px";
+	itemsNew.style.padding = "10px";
 	itemsNew.style.position = "absolute";
 	itemsNew.style.top = "0px";
 	itemsNew.style.right = "0px";
@@ -173,10 +186,36 @@ bestell.createJobs = function()
 	itemsNew.innerHTML = "+";
 	itemsNew.onclick = bestell.addItem;
 	itemsLeg.appendChild(itemsNew);
+
+	var itemsContent = document.createElement("div");
+	itemsContent.style.overflowX = "hidden";
+	itemsContent.style.overflowY = "auto";
+	itemsContent.style.position = "absolute";
+	itemsContent.style.left = "0px";
+	itemsContent.style.top = "50px";
+	itemsContent.style.right = "0px";
+	itemsContent.style.bottom = "0px";
+	itemsContent.style.backgroundColor = "#ffffff";
+	itemsLeg.appendChild(itemsContent);
+	
+	bestell.itemsContent = itemsContent;
 }
 
 bestell.addItem = function()
 {
+	if (! bestell.hasOwnProperty("selectedJob")) return;
+
+	var job = bestell.context.jobs[ bestell.selectedJob ];
+	if (! job.hasOwnProperty("items")) job.items = [];
+	
+	var item = {};
+	
+	item.guid = new Date().getTime();
+	
+	job.items.unshift(item);
+	bestell.selectedItem = 0;
+
+	bestell.updateItems();
 }
 
 bestell.addJob = function()
@@ -186,10 +225,69 @@ bestell.addJob = function()
 	job.date = new Date().getTime() / 1000;
 	job.name = bestell.fullDateString(job.date);
 	job.send = false;
+	job.items = [];
 
 	bestell.context.jobs.unshift(job);
+	bestell.selectedJob = 0;
+	bestell.selectedItem = 0;
 	
 	bestell.updateJobs();
+}
+
+bestell.selectItem = function(event)
+{
+	if (! bestell.hasOwnProperty("selectedJob")) return;
+	var job = bestell.context.jobs[ bestell.selectedJob ];
+
+	var target = event.target;
+	
+	if (target.nodeName == "INPUT") return;
+	if (target.nodeName == "SELECT") return;
+	if (target.nodeName == "OPTION") return;
+	
+	console.log("bestell.selectItem: " + event.target.nodeName);
+	
+	while (target && ! target.hasOwnProperty("itemIndex"))
+	{
+		target = target.parentNode;
+	}
+	
+	if (! target) return;
+
+	bestell.selectedItem = target.itemIndex;
+	
+	bestell.updateItems();
+}
+
+
+bestell.selectJob = function(event)
+{
+	var target = event.target;
+	
+	while (target && ! target.hasOwnProperty("jobIndex"))
+	{
+		target = target.parentNode;
+	}
+	
+	if (! target) return;
+
+	bestell.selectedJob = target.jobIndex;
+	bestell.updateJobs();
+}
+
+bestell.removeItem = function(event)
+{
+	if (! bestell.hasOwnProperty("selectedJob")) return;
+	var job = bestell.context.jobs[ bestell.selectedJob ];
+
+	var itemIndex = event.target.itemIndex;
+	var item = job.items[ itemIndex ];
+	
+	if (confirm("Wollen Sie diesen Artikel löschen? => " + item.title))
+	{
+		job.items.splice(itemIndex, 1);
+		bestell.updateItems();
+	}
 }
 
 bestell.removeJob = function(event)
@@ -204,10 +302,239 @@ bestell.removeJob = function(event)
 	}
 }
 
+bestell.createSachSelect = function(inputSize)
+{
+	var sachInput = document.createElement("select");
+	sachInput.style.width = "30%";
+	sachInput.style.height = "90%";
+	sachInput.style.border = "0px";
+	sachInput.style.margin = "0px";
+	sachInput.style.marginRight = "4px";
+	sachInput.style.padding = "0px";
+	sachInput.style.fontSize = inputSize;
+	
+	var sach = bestell.context.sach;
+	
+	for (var fnz = 0; fnz < sach.length; fnz++)
+	{
+		var option = document.createElement("option");
+		option.value = sach[ fnz ];
+		option.text  = sach[ fnz ];
+		sachInput.add(option);
+	}
+
+	return sachInput;
+}
+
+bestell.updateItems = function()
+{
+	var itemsContent = bestell.itemsContent;
+	itemsContent.innerHTML = null;
+
+	if (! bestell.hasOwnProperty("selectedJob")) return;
+	var job = bestell.context.jobs[ bestell.selectedJob ];
+	if (! job.hasOwnProperty("items")) job.items = [];
+	
+	var fontSize = "18px";
+	var inputSize = "16px";
+	
+	for (var inx = 0; inx < job.items.length; inx++)
+	{
+		var item = job.items[ inx ];
+		
+		var selected = (bestell.selectedItem == inx);
+		
+		var itemDiv = document.createElement("div");
+		itemDiv.style.position = "relative";
+		itemDiv.style.height = "50px";
+		itemDiv.style.fontSize = fontSize;
+		itemDiv.style.lineHeight = "28px";
+		itemDiv.style.borderBottom = "1px solid grey";
+
+		if (selected)
+		{
+			itemDiv.style.backgroundColor = item.ok ? "#bbffbb" : "#ffbbbb";
+		}
+		else
+		{
+			itemDiv.style.backgroundColor = item.ok ? "#eeffee" : "#ffeeee";
+		}
+
+		itemDiv.style.fontSize = fontSize;
+		itemDiv.style.textAlign = "left";
+		itemDiv.onclick = bestell.selectItem;
+		itemDiv.itemIndex = inx;
+		itemsContent.appendChild(itemDiv);
+		
+		var itemLine1 = document.createElement("div");
+		itemLine1.style.position = "absolute";
+		itemLine1.style.top = "0px";
+		itemLine1.style.left = "0px";
+		itemLine1.style.right = "0px";
+		itemLine1.style.bottom = "25px";
+		itemDiv.appendChild(itemLine1);
+
+		var itemLine2 = document.createElement("div");
+		itemLine2.style.position = "absolute";
+		itemLine2.style.top = "25px";
+		itemLine2.style.left = "0px";
+		itemLine2.style.right = "0px";
+		itemLine2.style.bottom = "0px";
+		itemDiv.appendChild(itemLine2);
+
+		var sourceDiv = document.createElement("div");
+		sourceDiv.style.position = "absolute";
+		sourceDiv.style.top = "0%";
+		sourceDiv.style.left = "2%";
+		sourceDiv.style.bottom = "0%";
+		sourceDiv.style.right = "72%";
+		itemLine1.appendChild(sourceDiv);
+		
+		if (selected)
+		{
+			var sourceInput = document.createElement("select");
+			sourceInput.style.width = "100%";
+			sourceInput.style.height = "90%";
+			sourceInput.style.border = "0px";
+			sourceInput.style.margin = "0px";
+			sourceInput.style.padding = "0px";
+			sourceInput.style.fontSize = inputSize;
+			
+			var sources = bestell.context.sources;
+			
+			for (var prop in sources)
+			{
+				var option = document.createElement("option");
+				option.value = prop;
+				option.text  = prop + " - " + sources[ prop ];
+				sourceInput.add(option);
+			}
+			        
+			sourceDiv.appendChild(sourceInput);
+		}
+		else
+		{
+			sourceDiv.innerHTML = "ND2";
+		}
+		
+		var dateDiv = document.createElement("div");
+		dateDiv.style.position = "absolute";
+		dateDiv.style.top = "0%";
+		dateDiv.style.left = "30%";
+		dateDiv.style.bottom = "0%";
+		dateDiv.style.right = "52%";
+		itemLine1.appendChild(dateDiv);
+		
+		if (selected)
+		{
+			var dateInput = document.createElement("input");
+			dateInput.style.width = "100%";
+			dateInput.style.height = "90%";
+			dateInput.style.border = "0px";
+			dateInput.style.margin = "0px";
+			dateInput.style.padding = "0px";
+			dateInput.style.fontSize = inputSize;
+			dateInput.type = "text";
+			dateInput.value = "29.05.1962";
+			
+			dateDiv.appendChild(dateInput);
+		}
+		else
+		{
+			dateDiv.innerHTML = "29.05.1962";
+		}
+		
+		var pageDiv = document.createElement("div");
+		pageDiv.style.position = "absolute";
+		pageDiv.style.top = "0%";
+		pageDiv.style.left = "50%";
+		pageDiv.style.bottom = "0%";
+		pageDiv.style.right = "42%";
+		itemLine1.appendChild(pageDiv);
+		
+		if (selected)
+		{
+			var pageInput = document.createElement("input");
+			pageInput.style.width = "100%";
+			pageInput.style.height = "90%";
+			pageInput.style.border = "0px";
+			pageInput.style.margin = "0px";
+			pageInput.style.padding = "0px";
+			pageInput.style.fontSize = inputSize;
+			pageInput.type = "text";
+			pageInput.value = "322";
+			
+			pageDiv.appendChild(pageInput);
+		}
+		else
+		{
+			pageDiv.innerHTML = "322";
+		}
+		
+		var sachDiv = document.createElement("div");
+		sachDiv.style.position = "absolute";
+		sachDiv.style.top = "0%";
+		sachDiv.style.left = "60%";
+		sachDiv.style.bottom = "0%";
+		sachDiv.style.right = "28px";
+		itemLine1.appendChild(sachDiv);
+		
+		if (selected)
+		{
+			sachDiv.appendChild(bestell.createSachSelect(inputSize));
+			sachDiv.appendChild(bestell.createSachSelect(inputSize));
+			sachDiv.appendChild(bestell.createSachSelect(inputSize));
+		}
+		else
+		{
+			sachDiv.innerHTML = "AAA, B, PLT";
+		}
+		
+		var titleDiv = document.createElement("div");
+		titleDiv.style.position = "absolute";
+		titleDiv.style.top = "0%";
+		titleDiv.style.left = "2%";
+		titleDiv.style.bottom = "0%";
+		titleDiv.style.right = "28px";
+		itemLine2.appendChild(titleDiv);
+		
+		if (selected)
+		{
+			var titleInput = document.createElement("input");
+			titleInput.style.width = "100%";
+			titleInput.style.height = "90%";
+			titleInput.style.border = "0px";
+			titleInput.style.margin = "0px";
+			titleInput.style.padding = "0px";
+			titleInput.style.fontSize = inputSize;
+			titleInput.type = "text";
+			titleInput.value = "Bibliothek wackelt";
+			
+			titleDiv.appendChild(titleInput);
+		}
+		else
+		{
+			titleDiv.innerHTML = "Bibliothek wackelt";
+		}
+		
+
+		
+		var itemIcon = document.createElement("img");
+		itemIcon.style.position = "absolute";
+		itemIcon.style.top = "15px";
+		itemIcon.style.right = "5px";
+		itemIcon.style.width = "20px";
+		itemIcon.style.height = "20px";
+		itemIcon.src = "images/remove.png";
+		itemIcon.onclick = bestell.removeItem;
+		itemIcon.itemIndex = inx;
+		itemDiv.appendChild(itemIcon);
+	}
+}
+
 bestell.updateJobs = function()
 {
 	var jobsContent = bestell.jobsContent;
-
 	jobsContent.innerHTML = null;
 	
 	var jobs = bestell.context.jobs;
@@ -220,11 +547,22 @@ bestell.updateJobs = function()
 		jobDiv.style.position = "relative";
 		jobDiv.style.height = "50px";
 		jobDiv.style.borderBottom = "1px solid grey";
-		jobDiv.style.backgroundColor = job.send ? "#eeffee" : "#ffeeee";
+		
+		if (bestell.selectedJob == inx)
+		{
+			jobDiv.style.backgroundColor = job.send ? "#bbffbb" : "#ffbbbb";
+		}
+		else
+		{
+			jobDiv.style.backgroundColor = job.send ? "#eeffee" : "#ffeeee";
+		}
+
+		jobDiv.onclick = bestell.selectJob;
+		jobDiv.jobIndex = inx;
 		jobsContent.appendChild(jobDiv);
 		
 		var jobDate = document.createElement("center");
-		jobDiv.style.lineHeight = "60px";
+		jobDate.style.lineHeight = "60px";
 		jobDate.innerHTML = bestell.fullDateHuman(job.date)
 		jobDiv.appendChild(jobDate);
 		
@@ -237,9 +575,10 @@ bestell.updateJobs = function()
 		jobIcon.src = "images/remove.png";
 		jobIcon.onclick = bestell.removeJob;
 		jobIcon.jobIndex = inx;
-		
 		jobDiv.appendChild(jobIcon);
 	}
+	
+	bestell.updateItems();
 }
 
 bestell.createLogin = function()
