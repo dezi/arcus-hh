@@ -10,7 +10,11 @@ bestell.createFrame = function()
 	bestell.createHeader();
 	
 	var contDiv = document.createElement("div");
-	contDiv.style.position = "relative";
+	contDiv.style.position = "absolute";
+	contDiv.style.top = "100px";
+	contDiv.style.left = "0px";
+	contDiv.style.right = "0px";
+	contDiv.style.bottom = "0px";
 	contDiv.style.padding = "20px";
 	contDiv.style.backgroundColor = "#eeeeee";
 	document.body.appendChild(contDiv);
@@ -26,6 +30,7 @@ bestell.createFrame = function()
 	else
 	{
 		bestell.displayLogin();
+		bestell.createJobs();
 	}
 }
 
@@ -33,9 +38,12 @@ bestell.createHeader = function()
 {
 	var headerDiv = document.createElement("div");
 	
-	headerDiv.style.position = "relative";
+	headerDiv.style.position = "absolute";
+	headerDiv.style.top = "0px";
+	headerDiv.style.left = "0px";
+	headerDiv.style.right = "0px";
 	headerDiv.style.height = "60px";
-	headerDiv.style.padding = '20px';
+	headerDiv.style.padding = "20px";
 	headerDiv.style.backgroundColor = "#ddddff";
 	document.body.appendChild(headerDiv);
 	
@@ -69,6 +77,61 @@ bestell.createHeader = function()
 	headerDiv.appendChild(userDiv);
 	
 	bestell.userDiv = userDiv;
+}
+
+bestell.createJobs = function()
+{
+	bestell.contDiv.innerHTML = null;
+	
+	var centerDiv = document.createElement("center");
+	centerDiv.style.fontSize = "24px"; 
+	centerDiv.style.height = "100%"; 
+	bestell.contDiv.appendChild(centerDiv);
+
+	var workDiv = document.createElement("div");
+	workDiv.style.position = "relative"; 
+	workDiv.style.width = "800px"; 
+	workDiv.style.height = "100%"; 
+	workDiv.style.border = "1px solid grey"; 
+	centerDiv.appendChild(workDiv);
+
+	var jobsLeg = document.createElement("div");
+	jobsLeg.style.position = "absolute"; 
+	jobsLeg.style.top = "0px"; 
+	jobsLeg.style.left = "0%"; 
+	jobsLeg.style.width = "50%"; 
+	jobsLeg.style.bottom = "0px"; 
+	jobsLeg.style.backgroundColor = "#ffffee";
+	workDiv.appendChild(jobsLeg);
+	
+	var jobsTitle = document.createElement("center");
+	jobsTitle.style.padding = "16px";
+	jobsTitle.style.borderBottom = "1px solid grey";
+	jobsTitle.style.backgroundColor = "#cccccc";
+	jobsTitle.innerHTML = "Aufträge";
+	jobsLeg.appendChild(jobsTitle);
+
+	var itemsLeg = document.createElement("div");
+	itemsLeg.style.borderLeft = "1px solid grey";
+	itemsLeg.style.borderRight = "1px solid grey";
+	itemsLeg.style.position = "absolute"; 
+	itemsLeg.style.top = "0px"; 
+	itemsLeg.style.left = "50%"; 
+	itemsLeg.style.width = "50%"; 
+	itemsLeg.style.bottom = "0px"; 
+	itemsLeg.style.backgroundColor = "#ffeeff";
+	workDiv.appendChild(itemsLeg);
+	
+	var itemsTitle = document.createElement("center");
+	itemsTitle.style.padding = "16px";
+	itemsTitle.style.borderBottom = "1px solid grey";
+	itemsTitle.style.backgroundColor = "#cccccc";
+	itemsTitle.innerHTML = "Artikel";
+	itemsLeg.appendChild(itemsTitle);
+
+
+	
+	
 }
 
 bestell.createLogin = function()
@@ -226,11 +289,12 @@ bestell.loginCallback = function(data)
 	}
 	
 	bestell.context = data;
-	
+	bestell.saveContext();
+
 	console.log(data);
 	
 	bestell.displayLogin();
-	bestell.saveContext();
+	bestell.createJobs();
 }
 
 bestell.requestJavascript = function(url)
