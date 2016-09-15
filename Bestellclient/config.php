@@ -4,7 +4,7 @@ $GLOBALS[ "benutzer" ] = array
 (
 	"ZDF_Mainz" => array
 	(
-		"pw" => "keins",
+		"pass" => "keins",
 		
 		"sources" => array
 		(
@@ -33,7 +33,7 @@ $GLOBALS[ "benutzer" ] = array
 	
 	"ZDF_Berlin" => array
 	(
-		"pw" => "keins",
+		"pass" => "keins",
 		
 		"sources" => array
 		(
@@ -44,7 +44,7 @@ $GLOBALS[ "benutzer" ] = array
 	
 	"ZDF_Hamburg" => array
 	(
-		"pw" => "keins",
+		"pass" => "keins",
 		
 		"sources" => array
 		(

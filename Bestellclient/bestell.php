@@ -9,11 +9,15 @@ bestell.createFrame = function()
 		
 	bestell.createHeader();
 	
-	var contDiv = bestell.contDiv = document.createElement("div");
+	var contDiv = document.createElement("div");
 	contDiv.style.position = "relative";
 	contDiv.style.padding = "20px";
 	contDiv.style.backgroundColor = "#eeeeee";
 	document.body.appendChild(contDiv);
+	
+	bestell.contDiv = contDiv;
+	
+	bestell.loadContext();
 	
 	if (! bestell.context)
 	{
@@ -21,6 +25,7 @@ bestell.createFrame = function()
 	}
 	else
 	{
+		bestell.displayLogin();
 	}
 }
 
@@ -52,11 +57,24 @@ bestell.createHeader = function()
 	titleDiv.style.fontSize = "56px";
 	titleDiv.innerHTML = "ARCUS - Bestellclient";
 	headerDiv.appendChild(titleDiv);
+	
+	var userDiv = document.createElement("div");
+	
+	userDiv.style.position = "absolute";
+	userDiv.style.right = "20px";
+	userDiv.style.top = "20px";
+	userDiv.style.bottom = "20px";
+	userDiv.style.textAlign = "right";
+	userDiv.style.lineHeight = "24px";
+	headerDiv.appendChild(userDiv);
+	
+	bestell.userDiv = userDiv;
 }
 
 bestell.createLogin = function()
 {
-	bestell.contDiv.innerHTML = "";
+	bestell.userDiv.innerHTML = null;
+	bestell.contDiv.innerHTML = null;
 	
 	var centerDiv = document.createElement("center");
 	centerDiv.style.padding = "20px";
@@ -79,6 +97,8 @@ bestell.createLogin = function()
 	var userInput = document.createElement("input");
 	userInput.style.fontSize = "24px"; 
 	userInput.type = "text"; 
+	userInput.name = "user"; 
+	userInput.value = "ZDF_Mainz"; 
 	userInput.size = 10; 
 	userDiv.appendChild(userInput);
 	
@@ -97,6 +117,8 @@ bestell.createLogin = function()
 	var passInput = document.createElement("input");
 	passInput.style.fontSize = "24px"; 
 	passInput.type = "password"; 
+	passInput.name = "password"; 
+	passInput.value = "keins"; 
 	passInput.size = 10; 
 	passDiv.appendChild(passInput);
 	
@@ -106,9 +128,143 @@ bestell.createLogin = function()
 	
 	var loginButton = document.createElement("input");
 	loginButton.style.fontSize = "24px"; 
+	loginButton.style.width = "280px"; 
 	loginButton.type = "button"; 
-	loginButton.value = "Login"; 
+	loginButton.value = "Login";
+	loginButton.onclick = bestell.loginClick;
 	buttonDiv.appendChild(loginButton);
+	
+	bestell.userInput = userInput;
+	bestell.passInput = passInput;
+}
+
+bestell.zeroPadStringLeft = function(str, digits)
+{
+	str += "";
+	
+	while (str.length < digits)
+	{
+		str = "0" + str;
+	}
+	
+	return str;
+}
+
+bestell.fullDateHuman = function(timestamp)
+{
+	var date = new Date(timestamp * 1000);
+	
+	var day = date.getDate();
+	var month = date.getMonth() + 1;
+	var year = date.getFullYear();
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	
+	var dst = bestell.zeroPadStringLeft(day, 2)
+			+ "."
+			+ bestell.zeroPadStringLeft(month, 2)
+			+ "."
+			+ bestell.zeroPadStringLeft(year, 4)
+			+ " "
+			+ bestell.zeroPadStringLeft(hour, 2)
+			+ ":"
+			+ bestell.zeroPadStringLeft(minute, 2)
+			;
+		
+	return dst;
+}
+
+bestell.displayLogin = function()
+{
+	var userDiv = bestell.userDiv;
+	userDiv.innerHTML = null;
+	
+	var userText = document.createElement("div");
+	userText.innerHTML = bestell.context.user;
+	
+	userDiv.appendChild(userText);
+	
+	var dateText = document.createElement("div");
+	dateText.innerHTML = bestell.fullDateHuman(bestell.context.time);
+	
+	userDiv.appendChild(dateText);
+	
+	var logoutButton = document.createElement("input");
+	logoutButton.style.fontSize = "12px"; 
+	logoutButton.style.width = "100px"; 
+	logoutButton.type = "button"; 
+	logoutButton.value = "Logout";
+	logoutButton.onclick = bestell.logoutClick;
+	userDiv.appendChild(logoutButton);
+}
+
+bestell.loginClick = function()
+{
+	var url = "login.php";
+	
+	url += "?user=" + encodeURIComponent(bestell.userInput.value);
+	url += "&pass=" + encodeURIComponent(bestell.passInput.value);
+	
+	bestell.requestJavascript(url);
+}
+
+bestell.logoutClick = function()
+{
+	localStorage.removeItem("context");
+	bestell.context = null;
+	
+	bestell.createLogin();
+}
+
+bestell.loginCallback = function(data)
+{
+	if (! data)
+	{
+		alert("Login falsch...");
+		
+		return;
+	}
+	
+	bestell.context = data;
+	
+	console.log(data);
+	
+	bestell.displayLogin();
+	bestell.saveContext();
+}
+
+bestell.requestJavascript = function(url)
+{
+    var head = document.getElementsByTagName("head")[0]
+    
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = url;
+
+    head.insertBefore(script, head.firstChild);
+    head.removeChild(script);
+}
+
+bestell.saveContext = function()
+{
+	localStorage.setItem("context", JSON.stringify(bestell.context));
+}
+
+bestell.loadContext = function()
+{
+	var json = localStorage.getItem("context");
+	bestell.context = json ? JSON.parse(json) : null;
 }
 
 bestell.createFrame();
+
+
+
+
+
+
+
+
+
+
+
