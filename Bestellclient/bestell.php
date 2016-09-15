@@ -4,8 +4,8 @@ bestell = {};
 
 bestell.createFrame = function()
 {
-	document.body.style.margin = '0px';
-	document.body.style.padding = '0px';
+	document.body.style.margin = "0px";
+	document.body.style.padding = "0px";
 		
 	bestell.createHeader();
 	
@@ -56,7 +56,7 @@ bestell.createHeader = function()
 	headerDiv.appendChild(logoDiv);
 
 	var logoImg = document.createElement("img");
-	logoImg.src = "images/arcus_logo.jpg";
+	logoImg.src = "images/arcus_logo.png";
 	logoImg.style.height = "100%";
 	logoImg.style.width = "auto";
 	logoDiv.appendChild(logoImg);
@@ -192,6 +192,18 @@ bestell.addJob = function()
 	bestell.updateJobs();
 }
 
+bestell.removeJob = function(event)
+{
+	var jobIndex = event.target.jobIndex;
+	var job = bestell.context.jobs[ jobIndex ];
+	
+	if (confirm("Wollen Sie diesen Job löschen? => " + job.name))
+	{
+		bestell.context.jobs.splice(jobIndex, 1);
+		bestell.updateJobs();
+	}
+}
+
 bestell.updateJobs = function()
 {
 	var jobsContent = bestell.jobsContent;
@@ -208,13 +220,25 @@ bestell.updateJobs = function()
 		jobDiv.style.position = "relative";
 		jobDiv.style.height = "50px";
 		jobDiv.style.borderBottom = "1px solid grey";
-		jobDiv.style.backgroundColor = job.send ? "#ddffdd" : "#ffdddd";
+		jobDiv.style.backgroundColor = job.send ? "#eeffee" : "#ffeeee";
 		jobsContent.appendChild(jobDiv);
 		
 		var jobDate = document.createElement("center");
-		jobDiv.style.lineHeight = "50px";
+		jobDiv.style.lineHeight = "60px";
 		jobDate.innerHTML = bestell.fullDateHuman(job.date)
 		jobDiv.appendChild(jobDate);
+		
+		var jobIcon = document.createElement("img");
+		jobIcon.style.position = "absolute";
+		jobIcon.style.top = "15px";
+		jobIcon.style.right = "5px";
+		jobIcon.style.width = "20px";
+		jobIcon.style.height = "20px";
+		jobIcon.src = "images/remove.png";
+		jobIcon.onclick = bestell.removeJob;
+		jobIcon.jobIndex = inx;
+		
+		jobDiv.appendChild(jobIcon);
 	}
 }
 
