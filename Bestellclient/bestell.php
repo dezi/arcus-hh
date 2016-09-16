@@ -29,8 +29,14 @@ bestell.createFrame = function()
 	}
 	else
 	{
+		if (bestell.context.jobs && (bestell.context.jobs.length > 0))
+		{
+			bestell.selectedJob = 0;
+		}
+		
 		bestell.displayLogin();
 		bestell.createJobs();
+		bestell.updateJobs();
 	}
 }
 
@@ -228,6 +234,7 @@ bestell.addItem = function()
 	bestell.selectedItem = 0;
 
 	bestell.updateItems();
+	bestell.saveContext();
 }
 
 bestell.addJob = function()
@@ -244,6 +251,7 @@ bestell.addJob = function()
 	bestell.selectedItem = -1;
 	
 	bestell.updateJobs();
+	bestell.saveContext();
 }
 
 bestell.selectItem = function(event)
@@ -301,6 +309,7 @@ bestell.removeItem = function(event)
 	{
 		job.items.splice(itemIndex, 1);
 		bestell.updateItems();
+		bestell.saveContext();
 	}
 }
 
@@ -312,7 +321,20 @@ bestell.removeJob = function(event)
 	if (confirm("Wollen Sie diesen Job löschen? => " + job.name))
 	{
 		bestell.context.jobs.splice(jobIndex, 1);
+		
+		if (bestell.selectedJob >= jobIndex)
+		{
+			delete bestell.selectedJob;
+			delete bestell.selectedItem;
+			
+			if (--jobIndex >= bestell.context.jobs.length)
+			{
+				bestell.selectedJob = jobIndex;
+			}
+		}
+		
 		bestell.updateJobs();
+		bestell.saveContext();
 	}
 }
 
@@ -354,6 +376,61 @@ bestell.createSachSelect = function(inputSize, value)
 	return sachInput;
 }
 
+bestell.validateItem = function(item)
+{
+	var date = item.date.split(".");
+	
+	if (date.length == 2) 
+	{
+		item.date += ".2016";
+		bestell.dateInput.value = item.date;
+	}
+	
+	
+	item.ok = item.source.length && item.date.length && item.page.length && item.title.length;
+
+	var date = item.date.split(".");
+	var dateok = false;
+	
+	if (date.length == 3)
+	{
+		console.log("bestell.validateItem: " + item.date);
+		
+		try
+		{
+			var day   = parseInt(date[ 0 ], 10);
+			var month = parseInt(date[ 1 ], 10);
+			var year  = parseInt(date[ 2 ], 10);
+			
+			var checkdate = new Date(year, month - 1, day);
+			
+			dateok = (checkdate.getFullYear() == year) &&
+					 (checkdate.getMonth() + 1 == month) &&
+					 (checkdate.getDate() == day);
+
+			console.log("bestell.validateItem: dateok=" + dateok);
+					 
+			if (! dateok)
+			{
+				item.date = bestell.zeroPadStringLeft(checkdate.getDate(), 2)
+						  + "."
+						  + bestell.zeroPadStringLeft(checkdate.getMonth() + 1, 2)
+						  + "."
+						  + bestell.zeroPadStringLeft(checkdate.getFullYear())
+						  ;
+						  
+				bestell.dateInput.value = item.date;
+				dateok = true;
+			}
+		}
+		catch (err)
+		{
+		}
+	}
+	
+	item.ok = item.ok && dateok;
+}
+
 bestell.onInputChanged = function(event)
 {
 	if (! bestell.hasOwnProperty("selectedJob")) return;
@@ -376,9 +453,13 @@ bestell.onInputChanged = function(event)
 	if (sg2.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg2;
 	if (sg3.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg3;
 	
-	console.log("bestell.onInputChanged: " + sg1 + "=" + sg2 + "=" + sg3 + ":" + item.sach);
-	
 	item.title = bestell.titleInput.value;
+	
+	bestell.validateItem(item);
+	bestell.saveContext();
+	
+	var itemDiv = event.target.parentNode.parentNode.parentNode;
+	itemDiv.style.backgroundColor = item.ok ? "#bbffbb" : "#ffbbbb";
 }
 
 bestell.updateItems = function()
