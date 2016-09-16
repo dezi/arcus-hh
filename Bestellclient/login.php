@@ -43,8 +43,10 @@ function sortJobs($a, $b)
 function readJobs($user)
 {
 	$jobdir = "data/$user/jobs";
+	$xmldir = "data/$user/xmls";
 	
-	if (! file_exists($jobdir)) mkdir($jobdir, 0755, true);
+	if (! file_exists($jobdir)) mkdir($jobdir, 0777, true);
+	if (! file_exists($xmldir)) mkdir($xmldir, 0777, true);
 	
 	$jobs = array();
 	

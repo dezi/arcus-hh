@@ -488,19 +488,16 @@ bestell.validateItem = function(item)
 					 (checkdate.getDate() == day);
 
 			console.log("bestell.validateItem: dateok=" + dateok);
-					 
-			if (! dateok)
-			{
-				item.date = bestell.zeroPadStringLeft(checkdate.getDate(), 2)
-						  + "."
-						  + bestell.zeroPadStringLeft(checkdate.getMonth() + 1, 2)
-						  + "."
-						  + bestell.zeroPadStringLeft(checkdate.getFullYear())
-						  ;
-						  
-				bestell.dateInput.value = item.date;
-				dateok = true;
-			}
+			
+			item.date = bestell.zeroPadStringLeft(checkdate.getDate(), 2)
+					  + "."
+					  + bestell.zeroPadStringLeft(checkdate.getMonth() + 1, 2)
+					  + "."
+					  + bestell.zeroPadStringLeft(checkdate.getFullYear(), 4)
+					  ;
+
+			bestell.dateInput.value = item.date;
+			dateok = true;
 		}
 		catch (err)
 		{
@@ -991,7 +988,7 @@ bestell.fullDateString = function(timestamp)
 			+ "_"
 			+ bestell.zeroPadStringLeft(month, 2)
 			+ "_"
-			+ bestell.zeroPadStringLeft(day, 4)
+			+ bestell.zeroPadStringLeft(day, 2)
 			+ "_"
 			+ bestell.zeroPadStringLeft(hour, 2)
 			+ "_"

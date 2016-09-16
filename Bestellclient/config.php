@@ -7,7 +7,11 @@ $GLOBALS[ "benutzer" ] = array
 		"pass" => "test",
 		
 		"ftp" => "arcus:keins@www.xavaro.de",
-
+		
+		"userid" => "1",
+		"custom" => "zdf",
+		"enotify" => "info@kappa-mm.de",
+		
 		"sources" => array
 		(
 			"AKT" => "Die Aktuelle",
@@ -39,6 +43,10 @@ $GLOBALS[ "benutzer" ] = array
 		
 		"ftp" => "bestellclient:zdf2010@ftp.arcus-hh.de",
 		
+		"userid" => "1",
+		"custom" => "zdf",
+		"enotify" => "info@arcus-hh.de",
+
 		"sources" => array
 		(
 			"AKT" => "Die Aktuelle",
@@ -69,6 +77,10 @@ $GLOBALS[ "benutzer" ] = array
 		"pass" => "keins",
 				
 		"ftp" => "bestellclient:zdf2010@ftp.arcus-hh.de",
+		
+		"userid" => "1",
+		"custom" => "zdf",
+		"enotify" => "mu.iud-technik@zdf.de",
 
 		"sources" => array
 		(
@@ -100,6 +112,10 @@ $GLOBALS[ "benutzer" ] = array
 		"pass" => "keins",
 				
 		"ftp" => "bestellclient:zdf2010@ftp.arcus-hh.de",
+		
+		"userid" => "1",
+		"custom" => "zdf",
+		"enotify" => "mu.iud-technik@zdf.de",
 
 		"sources" => array
 		(
@@ -113,6 +129,10 @@ $GLOBALS[ "benutzer" ] = array
 		"pass" => "keins",
 				
 		"ftp" => "bestellclient:zdf2010@ftp.arcus-hh.de",
+		
+		"userid" => "1",
+		"custom" => "zdf",
+		"enotify" => "mu.iud-technik@zdf.de",
 
 		"sources" => array
 		(
