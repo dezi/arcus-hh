@@ -98,7 +98,7 @@ function update()
 		}
 	}
 	
-	echo "bestell.updateCallback(" . ($result ? "true" : "false") . ");";
+	echo "bestell.updateCallback(" . ($result ? "true" : "false") . ", \"$jobname\");";
 }
 
 update();

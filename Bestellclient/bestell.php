@@ -175,7 +175,7 @@ bestell.createJobs = function()
 	itemsTitle.style.position = "absolute";
 	itemsTitle.style.top = "0px";
 	itemsTitle.style.left = "0px";
-	itemsTitle.style.right = "30px";
+	itemsTitle.style.right = "0px";
 	itemsTitle.style.height = "29px";
 	itemsTitle.style.borderBottom = "1px solid grey";
 	itemsTitle.style.backgroundColor = "#bbbbbb";
@@ -183,6 +183,7 @@ bestell.createJobs = function()
 	itemsLeg.appendChild(itemsTitle);
 
 	var itemsNew = document.createElement("div");
+	itemsNew.style.display = "none";
 	itemsNew.style.padding = "10px";
 	itemsNew.style.position = "absolute";
 	itemsNew.style.top = "0px";
@@ -192,6 +193,8 @@ bestell.createJobs = function()
 	itemsNew.innerHTML = "+";
 	itemsNew.onclick = bestell.addItem;
 	itemsLeg.appendChild(itemsNew);
+	
+	bestell.itemsNew = itemsNew;
 
 	var itemsContent = document.createElement("div");
 	itemsContent.style.overflowX = "hidden";
@@ -268,6 +271,16 @@ bestell.updateRemoteJob = function(mode, job)
 	url += "&jobdate=" + job.date;
 
 	if (job.send) url += "&jobsend=" + job.send;
+	
+	bestell.requestJavascript(url);
+}
+
+bestell.sendftpRemoteJob = function(job)
+{
+	var url = "sendftp.php";
+	
+	url += "?user=" + bestell.context.user;
+	url += "&jobname=" + job.name;
 	
 	bestell.requestJavascript(url);
 }
@@ -350,7 +363,7 @@ bestell.removeItem = function(event)
 	
 	var deltag = item.source + " " + item.date + " " + item.page + "\n\n" + item.title;
 	
-	if (confirm("Wollen Sie diesen Artikel löschen?\n\n" + deltag))
+	if ((deltag.trim() == "") || confirm("Wollen Sie diesen Artikel löschen?\n\n" + deltag))
 	{
 		delete bestell.selectedItem;
 
@@ -360,6 +373,19 @@ bestell.removeItem = function(event)
 		bestell.saveContext();
 		
 		bestell.updateRemoteItem("d", job, item);
+	}
+}
+
+bestell.sendJob = function(event)
+{
+	event.preventDefault();
+
+	var jobIndex = event.target.jobIndex;
+	var job = bestell.context.jobs[ jobIndex ];
+	
+	if (confirm("Wollen Sie diesen Auftrag versenden?\n\n" + job.name))
+	{
+		bestell.sendftpRemoteJob(job);
 	}
 }
 
@@ -439,7 +465,6 @@ bestell.validateItem = function(item)
 		item.date += ".2016";
 		bestell.dateInput.value = item.date;
 	}
-	
 	
 	item.ok = item.source.length && item.date.length && item.page.length && item.title.length;
 
@@ -528,6 +553,8 @@ bestell.updateItems = function()
 	var job = bestell.context.jobs[ bestell.selectedJob ];
 	if (! job.hasOwnProperty("items")) job.items = [];
 	
+	bestell.itemsNew.style.display = job.send ? "none" : "block";
+	
 	var fontSize = "18px";
 	var inputSize = "16px";
 	
@@ -553,6 +580,8 @@ bestell.updateItems = function()
 			itemDiv.style.backgroundColor = item.ok ? "#eeffee" : "#ffeeee";
 		}
 
+		selected = selected && ! job.send;
+		
 		itemDiv.style.fontSize = fontSize;
 		itemDiv.style.textAlign = "left";
 		itemDiv.onclick = bestell.selectItem;
@@ -779,16 +808,19 @@ bestell.updateItems = function()
 			notesDiv.innerHTML = item.notes;
 		}
 				
-		var itemIcon = document.createElement("img");
-		itemIcon.style.position = "absolute";
-		itemIcon.style.top = "15px";
-		itemIcon.style.right = "5px";
-		itemIcon.style.width = "20px";
-		itemIcon.style.height = "20px";
-		itemIcon.src = "images/remove.png";
-		itemIcon.onclick = bestell.removeItem;
-		itemIcon.itemIndex = inx;
-		itemDiv.appendChild(itemIcon);
+		if (! job.send)
+		{
+			var itemDeleteIcon = document.createElement("img");
+			itemDeleteIcon.style.position = "absolute";
+			itemDeleteIcon.style.top = "15px";
+			itemDeleteIcon.style.right = "5px";
+			itemDeleteIcon.style.width = "20px";
+			itemDeleteIcon.style.height = "20px";
+			itemDeleteIcon.src = "images/remove.png";
+			itemDeleteIcon.onclick = bestell.removeItem;
+			itemDeleteIcon.itemIndex = inx;
+			itemDiv.appendChild(itemDeleteIcon);
+		}
 	}
 }
 
@@ -823,19 +855,44 @@ bestell.updateJobs = function()
 		
 		var jobDate = document.createElement("center");
 		jobDate.style.lineHeight = "60px";
-		jobDate.innerHTML = bestell.fullDateHuman(job.date)
+		jobDate.innerHTML = bestell.fullDateHuman(job.date);
 		jobDiv.appendChild(jobDate);
 		
-		var jobIcon = document.createElement("img");
-		jobIcon.style.position = "absolute";
-		jobIcon.style.top = "15px";
-		jobIcon.style.right = "5px";
-		jobIcon.style.width = "20px";
-		jobIcon.style.height = "20px";
-		jobIcon.src = "images/remove.png";
-		jobIcon.onclick = bestell.removeJob;
-		jobIcon.jobIndex = inx;
-		jobDiv.appendChild(jobIcon);
+		if (job.send)
+		{
+			jobDate.style.lineHeight = "40px";
+			
+			var jobSend = document.createElement("center");
+			jobSend.style.lineHeight = "0px";
+			jobSend.style.fontSize = "12px";
+			jobSend.innerHTML = "Bestellt: " + bestell.fullDateHuman(job.send);
+			jobDiv.appendChild(jobSend);
+		}
+		
+		if (! job.send)
+		{
+			var jobSendIcon = document.createElement("img");
+			jobSendIcon.style.position = "absolute";
+			jobSendIcon.style.top = "15px";
+			jobSendIcon.style.left = "5px";
+			jobSendIcon.style.width = "20px";
+			jobSendIcon.style.height = "20px";
+			jobSendIcon.src = "images/send.png";
+			jobSendIcon.onclick = bestell.sendJob;
+			jobSendIcon.jobIndex = inx;
+			jobDiv.appendChild(jobSendIcon);
+
+			var jobDeleteIcon = document.createElement("img");
+			jobDeleteIcon.style.position = "absolute";
+			jobDeleteIcon.style.top = "15px";
+			jobDeleteIcon.style.right = "5px";
+			jobDeleteIcon.style.width = "20px";
+			jobDeleteIcon.style.height = "20px";
+			jobDeleteIcon.src = "images/remove.png";
+			jobDeleteIcon.onclick = bestell.removeJob;
+			jobDeleteIcon.jobIndex = inx;
+			jobDiv.appendChild(jobDeleteIcon);
+		}
 	}
 	
 	bestell.updateItems();
@@ -1032,9 +1089,47 @@ bestell.loginCallback = function(data)
 	bestell.updateJobs();
 }
 
-bestell.updateCallback = function(ok)
+bestell.sendftpCallback = function(ok, jobname)
 {
-	console.log("bestell.updateCallback: ok=" + ok);
+	console.log("bestell.sendftpCallback: ok=" + ok + " jobname=" + jobname);
+	
+	if (! ok)
+	{
+		alert("Versenden fehlgeschlagen:\n\n" + jobname);
+		
+		return;
+	}
+
+	var jobs = bestell.context.jobs;
+	
+	for (var inx = 0; inx < jobs.length; inx++)
+	{
+		var job = jobs[ inx ];
+		
+		if (job.name == jobname)
+		{
+			job.send = Math.floor(new Date().getTime() / 1000);
+			
+			bestell.updateJobs();
+			bestell.saveContext();
+	
+			bestell.updateRemoteJob("u", job);
+			
+			break;
+		}
+	}
+}
+
+bestell.updateCallback = function(ok, jobname)
+{
+	console.log("bestell.updateCallback: ok=" + ok + " jobname=" + jobname);
+	
+	if (! ok)
+	{
+		alert("Speichern fehlgeschlagen:\n\n" + jobname);
+		
+		return;
+	}
 }
 
 bestell.requestJavascript = function(url)
