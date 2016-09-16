@@ -88,7 +88,12 @@ function artikelKey($item)
 
 function artikelRaw($item)
 {
-	return $item[ "guid" ];
+	$key  = substr($item[ "date" ], 6, 4);
+	$key .= substr($item[ "date" ], 3, 2);
+	$key .= substr($item[ "date" ], 0, 2);
+	$key .= $item[ "guid" ];
+	
+	return $key;
 }
 
 function getDayOfWeek($datum)
@@ -185,6 +190,27 @@ function generateXML($xmlfile, $job, $user)
 			$xml[] = "\t\t\t\t\t<wtag>$wtag</wtag>";
 			$xml[] = "\t\t\t\t\t<nummer></nummer>";
 			$xml[] = "\t\t\t\t</ausgabe>";
+
+			$seite = $item[ "page" ];
+			
+			$xml[] = "\t\t\t\t<seiten>";
+			$xml[] = "\t\t\t\t\t<startseite>$seite</startseite>";
+			$xml[] = "\t\t\t\t\t<endseite>$seite</endseite>";
+			$xml[] = "\t\t\t\t\t<einzeln>";
+			$xml[] = "\t\t\t\t\t\t<seite>$seite</seite>";
+			$xml[] = "\t\t\t\t\t</einzeln>";
+			$xml[] = "\t\t\t\t</seiten>";
+			
+			$sach = isset($item[ "sach" ]) ? explode(", ", $item[ "sach" ]) : array();
+
+			$xml[] = "\t\t\t\t<sachgebiete>";
+			foreach ($sach as $sg) $xml[] = "\t\t\t\t\t<sachgebiet>$sg</sachgebiet>";
+			$xml[] = "\t\t\t\t</sachgebiete>";
+
+			$xml[] = "\t\t\t\t<autoren></autoren>";
+			$xml[] = "\t\t\t\t<kategorie></kategorie>";
+			$xml[] = "\t\t\t\t<textsorte></textsorte>";
+			$xml[] = "\t\t\t\t<laender></laender>";
 
 			$xml[] = "\t\t\t</formal>";
 
