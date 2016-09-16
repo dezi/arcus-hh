@@ -241,9 +241,8 @@ bestell.addJob = function()
 {
 	var job = {};
 	
-	job.date = new Date().getTime() / 1000;
+	job.date = Math.floor(new Date().getTime() / 1000);
 	job.name = bestell.fullDateString(job.date);
-	job.send = false;
 	job.items = [];
 
 	bestell.context.jobs.unshift(job);
@@ -252,6 +251,20 @@ bestell.addJob = function()
 	
 	bestell.updateJobs();
 	bestell.saveContext();
+	
+	bestell.updateRemoteJob(job);
+}
+
+bestell.updateRemoteJob = function(job)
+{
+	var url = "update.php";
+	
+	url += "?user=" + bestell.context.user;
+	url += "&mode=u";
+	url += "&jobname=" + job.name;
+	url += "&jobdate=" + job.date;
+	
+	bestell.requestJavascript(url);
 }
 
 bestell.selectItem = function(event)
@@ -937,10 +950,18 @@ bestell.loginCallback = function(data)
 	
 	bestell.displayLogin();
 	bestell.createJobs();
+	bestell.updateJobs();
+}
+
+bestell.updateCallback = function(error)
+{
+	alert("bestell.updateCallback: " + error);
 }
 
 bestell.requestJavascript = function(url)
 {
+	console.log("bestell.requestJavascript: url=" + url);
+	
     var head = document.getElementsByTagName("head")[0]
     
     var script = document.createElement("script");

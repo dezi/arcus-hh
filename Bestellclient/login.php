@@ -34,6 +34,12 @@ function login()
 	echo "bestell.loginCallback($data);";
 }
 
+function sortJobs($a, $b)
+{
+    if ($a[ "name" ] == $b[ "name" ]) return 0;
+    return ($a[ "name" ] > $b[ "name" ]) ? -1 : 1;
+}
+
 function readJobs($user)
 {
 	$jobdir = "data/$user/jobs";
@@ -58,12 +64,13 @@ function readJobs($user)
 			$job = json_decdat(file_get_contents($jobfile));
 			$jobid = substr($entry, 0, -5);
 			
-			$jobs[ $jobid ] = $job;
+			$jobs[] = $job;
 		}
-		
 		closedir($dfd);
 	}
-	
+			
+	usort($jobs, "sortJobs");
+
 	return $jobs;
 }
 

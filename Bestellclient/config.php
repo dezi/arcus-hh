@@ -67,7 +67,9 @@ $GLOBALS[ "benutzer" ] = array
 	"ZDF_Mainz" => array
 	(
 		"pass" => "keins",
-		
+				
+		"ftp" => "bestellclient:zdf2010@ftp.arcus-hh.de",
+
 		"sources" => array
 		(
 			"AKT" => "Die Aktuelle",
@@ -96,7 +98,9 @@ $GLOBALS[ "benutzer" ] = array
 	"ZDF_Berlin" => array
 	(
 		"pass" => "keins",
-		
+				
+		"ftp" => "bestellclient:zdf2010@ftp.arcus-hh.de",
+
 		"sources" => array
 		(
 			"TA1" => "TAZ Berlin Ausgabe",
@@ -107,7 +111,9 @@ $GLOBALS[ "benutzer" ] = array
 	"ZDF_Hamburg" => array
 	(
 		"pass" => "keins",
-		
+				
+		"ftp" => "bestellclient:zdf2010@ftp.arcus-hh.de",
+
 		"sources" => array
 		(
 			"TA5" => "TAZ Hamburg Ausgabe"
