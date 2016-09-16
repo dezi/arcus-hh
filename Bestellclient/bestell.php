@@ -779,7 +779,7 @@ bestell.createLogin = function()
 	userInput.style.fontSize = "24px"; 
 	userInput.type = "text"; 
 	userInput.name = "user"; 
-	userInput.value = "ZDF_Mainz"; 
+	userInput.value = "Test-Kappa"; 
 	userInput.size = 10; 
 	userDiv.appendChild(userInput);
 	
@@ -799,7 +799,7 @@ bestell.createLogin = function()
 	passInput.style.fontSize = "24px"; 
 	passInput.type = "password"; 
 	passInput.name = "password"; 
-	passInput.value = "keins"; 
+	passInput.value = "test"; 
 	passInput.size = 10; 
 	passDiv.appendChild(passInput);
 	
