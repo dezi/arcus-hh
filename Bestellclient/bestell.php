@@ -211,6 +211,18 @@ bestell.addItem = function()
 	var item = {};
 	
 	item.guid = new Date().getTime();
+	item.source = "";
+	item.date = "";
+	item.page = "";
+	item.sach = "";
+	item.title = "";
+
+	if (job.items.length > 0)
+	{
+		item.source = job.items[ 0 ].source;
+		item.date = job.items[ 0 ].date;
+		item.page = job.items[ 0 ].page;
+	}
 	
 	job.items.unshift(item);
 	bestell.selectedItem = 0;
@@ -229,7 +241,7 @@ bestell.addJob = function()
 
 	bestell.context.jobs.unshift(job);
 	bestell.selectedJob = 0;
-	bestell.selectedItem = 0;
+	bestell.selectedItem = -1;
 	
 	bestell.updateJobs();
 }
@@ -272,6 +284,8 @@ bestell.selectJob = function(event)
 	if (! target) return;
 
 	bestell.selectedJob = target.jobIndex;
+	bestell.selectedItem = -1;
+	
 	bestell.updateJobs();
 }
 
@@ -302,7 +316,7 @@ bestell.removeJob = function(event)
 	}
 }
 
-bestell.createSachSelect = function(inputSize)
+bestell.createSachSelect = function(inputSize, value)
 {
 	var sachInput = document.createElement("select");
 	sachInput.style.width = "30%";
@@ -312,18 +326,59 @@ bestell.createSachSelect = function(inputSize)
 	sachInput.style.marginRight = "4px";
 	sachInput.style.padding = "0px";
 	sachInput.style.fontSize = inputSize;
+	sachInput.value = value;
+	sachInput.onchange = bestell.onInputChanged;
+
+	var option = document.createElement("option");
+	option.value = "";
+	option.text  = "";
+	sachInput.add(option);
 	
 	var sach = bestell.context.sach;
-	
+			
 	for (var fnz = 0; fnz < sach.length; fnz++)
 	{
 		var option = document.createElement("option");
+		
 		option.value = sach[ fnz ];
 		option.text  = sach[ fnz ];
+		
 		sachInput.add(option);
+		
+		if (option.value == value)
+		{
+			sachInput.selectedIndex = fnz + 1;
+		}
 	}
 
 	return sachInput;
+}
+
+bestell.onInputChanged = function(event)
+{
+	if (! bestell.hasOwnProperty("selectedJob")) return;
+	var job = bestell.context.jobs[ bestell.selectedJob ];
+
+	if (! bestell.hasOwnProperty("selectedItem")) return;
+	var item = job.items[ bestell.selectedItem ];
+	
+	item.source = bestell.sourceInput.value;
+	item.date = bestell.dateInput.value;
+	item.page = bestell.pageInput.value;
+	
+	var sg1 = bestell.sachInput1.value;
+	var sg2 = bestell.sachInput2.value;
+	var sg3 = bestell.sachInput3.value;
+	
+	item.sach = "";
+	
+	if (sg1.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg1;
+	if (sg2.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg2;
+	if (sg3.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg3;
+	
+	console.log("bestell.onInputChanged: " + sg1 + "=" + sg2 + "=" + sg3 + ":" + item.sach);
+	
+	item.title = bestell.titleInput.value;
 }
 
 bestell.updateItems = function()
@@ -387,7 +442,10 @@ bestell.updateItems = function()
 		sourceDiv.style.top = "0%";
 		sourceDiv.style.left = "2%";
 		sourceDiv.style.bottom = "0%";
-		sourceDiv.style.right = "72%";
+		sourceDiv.style.right = "58%";
+  		sourceDiv.style.overflow = "hidden";
+		sourceDiv.style.whiteSpace = "nowrap";
+  		sourceDiv.style.textOverflow = "ellipsis";
 		itemLine1.appendChild(sourceDiv);
 		
 		if (selected)
@@ -399,30 +457,49 @@ bestell.updateItems = function()
 			sourceInput.style.margin = "0px";
 			sourceInput.style.padding = "0px";
 			sourceInput.style.fontSize = inputSize;
+
+			sourceInput.onchange = bestell.onInputChanged;
 			
 			var sources = bestell.context.sources;
+			
+			var option = document.createElement("option");
+			option.value = "";
+			option.text  = "";
+			sourceInput.add(option);
+
+			var cnt = 1;
 			
 			for (var prop in sources)
 			{
 				var option = document.createElement("option");
-				option.value = prop;
+				
+				option.value = prop + " - " + sources[ prop ];
 				option.text  = prop + " - " + sources[ prop ];
+				
 				sourceInput.add(option);
+
+				if (option.value == item.source)
+				{
+					sourceInput.selectedIndex = cnt;
+				}
+				
+				cnt++;
 			}
 			        
 			sourceDiv.appendChild(sourceInput);
+			bestell.sourceInput = sourceInput;
 		}
 		else
 		{
-			sourceDiv.innerHTML = "ND2";
+			sourceDiv.innerHTML = item.source;
 		}
 		
 		var dateDiv = document.createElement("div");
 		dateDiv.style.position = "absolute";
 		dateDiv.style.top = "0%";
-		dateDiv.style.left = "30%";
+		dateDiv.style.left = "44%";
 		dateDiv.style.bottom = "0%";
-		dateDiv.style.right = "52%";
+		dateDiv.style.right = "42%";
 		itemLine1.appendChild(dateDiv);
 		
 		if (selected)
@@ -435,21 +512,23 @@ bestell.updateItems = function()
 			dateInput.style.padding = "0px";
 			dateInput.style.fontSize = inputSize;
 			dateInput.type = "text";
-			dateInput.value = "29.05.1962";
-			
+			dateInput.value = item.date;
+			dateInput.onchange = bestell.onInputChanged;
+
 			dateDiv.appendChild(dateInput);
+			bestell.dateInput = dateInput;
 		}
 		else
 		{
-			dateDiv.innerHTML = "29.05.1962";
+			dateDiv.innerHTML = item.date;
 		}
 		
 		var pageDiv = document.createElement("div");
 		pageDiv.style.position = "absolute";
 		pageDiv.style.top = "0%";
-		pageDiv.style.left = "50%";
+		pageDiv.style.left = "60%";
 		pageDiv.style.bottom = "0%";
-		pageDiv.style.right = "42%";
+		pageDiv.style.right = "32%";
 		itemLine1.appendChild(pageDiv);
 		
 		if (selected)
@@ -462,32 +541,40 @@ bestell.updateItems = function()
 			pageInput.style.padding = "0px";
 			pageInput.style.fontSize = inputSize;
 			pageInput.type = "text";
-			pageInput.value = "322";
+			pageInput.value = item.page;
+			pageInput.onchange = bestell.onInputChanged;
 			
 			pageDiv.appendChild(pageInput);
+			bestell.pageInput = pageInput;
 		}
 		else
 		{
-			pageDiv.innerHTML = "322";
+			pageDiv.innerHTML = item.page;
 		}
 		
 		var sachDiv = document.createElement("div");
 		sachDiv.style.position = "absolute";
 		sachDiv.style.top = "0%";
-		sachDiv.style.left = "60%";
+		sachDiv.style.left = "70%";
 		sachDiv.style.bottom = "0%";
 		sachDiv.style.right = "28px";
 		itemLine1.appendChild(sachDiv);
 		
 		if (selected)
 		{
-			sachDiv.appendChild(bestell.createSachSelect(inputSize));
-			sachDiv.appendChild(bestell.createSachSelect(inputSize));
-			sachDiv.appendChild(bestell.createSachSelect(inputSize));
+			var sach = item.sach.split(", ");
+			
+			bestell.sachInput1 = bestell.createSachSelect(inputSize, sach[ 0 ]);
+			bestell.sachInput2 = bestell.createSachSelect(inputSize, sach[ 1 ]);
+			bestell.sachInput3 = bestell.createSachSelect(inputSize, sach[ 2 ]);
+			
+			sachDiv.appendChild(bestell.sachInput1);
+			sachDiv.appendChild(bestell.sachInput2);
+			sachDiv.appendChild(bestell.sachInput3);
 		}
 		else
 		{
-			sachDiv.innerHTML = "AAA, B, PLT";
+			sachDiv.innerHTML = item.sach;
 		}
 		
 		var titleDiv = document.createElement("div");
@@ -495,7 +582,10 @@ bestell.updateItems = function()
 		titleDiv.style.top = "0%";
 		titleDiv.style.left = "2%";
 		titleDiv.style.bottom = "0%";
-		titleDiv.style.right = "28px";
+		titleDiv.style.right = "40px";
+  		titleDiv.style.overflow = "hidden";
+		titleDiv.style.whiteSpace = "nowrap";
+  		titleDiv.style.textOverflow = "ellipsis";
 		itemLine2.appendChild(titleDiv);
 		
 		if (selected)
@@ -508,16 +598,16 @@ bestell.updateItems = function()
 			titleInput.style.padding = "0px";
 			titleInput.style.fontSize = inputSize;
 			titleInput.type = "text";
-			titleInput.value = "Bibliothek wackelt";
-			
+			titleInput.value = item.title;
+			titleInput.onchange = bestell.onInputChanged;
+
 			titleDiv.appendChild(titleInput);
+			bestell.titleInput = titleInput;
 		}
 		else
 		{
-			titleDiv.innerHTML = "Bibliothek wackelt";
+			titleDiv.innerHTML = item.title;
 		}
-		
-
 		
 		var itemIcon = document.createElement("img");
 		itemIcon.style.position = "absolute";
