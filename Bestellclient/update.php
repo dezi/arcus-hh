@@ -42,51 +42,57 @@ function update()
 		{
 			$jobfile = "$userdir/$jobname.json";
 			
-			if ($mode == "d")
+			if (($mode == "d") && ($guid === null))
 			{
 				unlink($jobfile);
 				$result = true;
 			}
-			
-			if ($mode == "u")
+			else
 			{
 				$data = array();
-				
+			
 				if (file_exists($jobfile))
 				{
 					$data = json_decdat(file_get_contents($jobfile));
 				}
-				
+			
 				if ($jobname) $data[ "name" ] = $jobname;
 				if ($jobdate) $data[ "date" ] = $jobdate;
 				if ($jobsend) $data[ "send" ] = $jobsend;
-				
+			
 				if ($guid)
 				{
 					if (! isset($data[ "items" ])) $data[ "items" ] = array();
 					$items = &$data[ "items" ];
-					
+				
 					for ($iteminx = 0; $iteminx < count($items); $iteminx++)
 					{
 						if ($items[ $iteminx ][ "guid" ] == $guid) break;
 					}
-					
-					if ($iteminx == count($items)) $items[] = array();
-					
-					if ($guid   !== null) $items[ $iteminx ][ "guid"   ] = $guid;
-					if ($source !== null) $items[ $iteminx ][ "source" ] = $source;
-					if ($date   !== null) $items[ $iteminx ][ "date"   ] = $date;
-					if ($page   !== null) $items[ $iteminx ][ "page"   ] = $page;
-					if ($sach   !== null) $items[ $iteminx ][ "sach"   ] = $sach;
-					if ($title  !== null) $items[ $iteminx ][ "title"  ] = $title;
-					if ($notes  !== null) $items[ $iteminx ][ "notes"  ] = $notes;
-					if ($ok     !== null) $items[ $iteminx ][ "ok"     ] = ($ok == "true");
-					
-					usort($data[ "items" ], "sortItems");
+				
+					if ($mode == "d")
+					{
+						if ($iteminx < count($items)) array_splice($items, $iteminx, 1);
+					}
+					else
+					{
+						if ($iteminx == count($items)) $items[] = array();
+				
+						if ($guid   !== null) $items[ $iteminx ][ "guid"   ] = $guid;
+						if ($source !== null) $items[ $iteminx ][ "source" ] = $source;
+						if ($date   !== null) $items[ $iteminx ][ "date"   ] = $date;
+						if ($page   !== null) $items[ $iteminx ][ "page"   ] = $page;
+						if ($sach   !== null) $items[ $iteminx ][ "sach"   ] = $sach;
+						if ($title  !== null) $items[ $iteminx ][ "title"  ] = $title;
+						if ($notes  !== null) $items[ $iteminx ][ "notes"  ] = $notes;
+						if ($ok     !== null) $items[ $iteminx ][ "ok"     ] = ($ok == "true");
+				
+						usort($data[ "items" ], "sortItems");
+					}
 				}
-				
+			
 				file_put_contents($jobfile, json_encdat($data) . "\n");
-				
+			
 				$result = true;
 			}
 		}

@@ -352,7 +352,10 @@ bestell.removeItem = function(event)
 	
 	if (confirm("Wollen Sie diesen Artikel löschen?\n\n" + deltag))
 	{
+		delete bestell.selectedItem;
+
 		job.items.splice(itemIndex, 1);
+		
 		bestell.updateItems();
 		bestell.saveContext();
 		
@@ -717,7 +720,7 @@ bestell.updateItems = function()
 		titleDiv.style.top = "0%";
 		titleDiv.style.left = "2%";
 		titleDiv.style.bottom = "0%";
-		titleDiv.style.right = "50%";
+		titleDiv.style.right = "42%";
   		titleDiv.style.overflow = "hidden";
 		titleDiv.style.whiteSpace = "nowrap";
   		titleDiv.style.textOverflow = "ellipsis";
@@ -747,7 +750,7 @@ bestell.updateItems = function()
 		var notesDiv = document.createElement("div");
 		notesDiv.style.position = "absolute";
 		notesDiv.style.top = "0%";
-		notesDiv.style.left = "52%";
+		notesDiv.style.left = "60%";
 		notesDiv.style.bottom = "0%";
 		notesDiv.style.right = "40px";
   		notesDiv.style.overflow = "hidden";
