@@ -231,7 +231,6 @@ bestell.addItem = function()
 	{
 		item.source = job.items[ 0 ].source;
 		item.date = job.items[ 0 ].date;
-		item.page = job.items[ 0 ].page;
 	}
 	
 	job.items.unshift(item);
