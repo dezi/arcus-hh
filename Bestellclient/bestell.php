@@ -437,7 +437,7 @@ bestell.removeJob = function(event)
 bestell.createSachSelect = function(inputSize, value)
 {
 	var sachInput = document.createElement("select");
-	sachInput.style.width = "30%";
+	sachInput.style.width = "18%";
 	sachInput.style.height = "90%";
 	sachInput.style.border = "0px";
 	sachInput.style.margin = "0px";
@@ -538,12 +538,16 @@ bestell.onInputChanged = function(event)
 	var sg1 = bestell.sachInput1.value;
 	var sg2 = bestell.sachInput2.value;
 	var sg3 = bestell.sachInput3.value;
+	var sg4 = bestell.sachInput4.value;
+	var sg5 = bestell.sachInput5.value;
 	
 	item.sach = "";
 	
 	if (sg1.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg1;
 	if (sg2.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg2;
 	if (sg3.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg3;
+	if (sg4.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg4;
+	if (sg5.length) item.sach += ((item.sach.length > 0) ? ", " : "") + sg5;
 	
 	item.title = bestell.titleInput.value;
 	item.notes = bestell.notesInput.value;
@@ -622,7 +626,7 @@ bestell.updateItems = function()
 		sourceDiv.style.top = "0%";
 		sourceDiv.style.left = "2%";
 		sourceDiv.style.bottom = "0%";
-		sourceDiv.style.right = "58%";
+		sourceDiv.style.right = "68%";
   		sourceDiv.style.overflow = "hidden";
 		sourceDiv.style.whiteSpace = "nowrap";
   		sourceDiv.style.textOverflow = "ellipsis";
@@ -677,9 +681,9 @@ bestell.updateItems = function()
 		var dateDiv = document.createElement("div");
 		dateDiv.style.position = "absolute";
 		dateDiv.style.top = "0%";
-		dateDiv.style.left = "44%";
+		dateDiv.style.left = "34%";
 		dateDiv.style.bottom = "0%";
-		dateDiv.style.right = "42%";
+		dateDiv.style.right = "52%";
 		itemLine1.appendChild(dateDiv);
 		
 		if (selected)
@@ -707,9 +711,9 @@ bestell.updateItems = function()
 		var pageDiv = document.createElement("div");
 		pageDiv.style.position = "absolute";
 		pageDiv.style.top = "0%";
-		pageDiv.style.left = "60%";
+		pageDiv.style.left = "50%";
 		pageDiv.style.bottom = "0%";
-		pageDiv.style.right = "32%";
+		pageDiv.style.right = "42%";
 		itemLine1.appendChild(pageDiv);
 		
 		if (selected)
@@ -737,7 +741,7 @@ bestell.updateItems = function()
 		var sachDiv = document.createElement("div");
 		sachDiv.style.position = "absolute";
 		sachDiv.style.top = "0%";
-		sachDiv.style.left = "70%";
+		sachDiv.style.left = "60%";
 		sachDiv.style.bottom = "0%";
 		sachDiv.style.right = "28px";
 		itemLine1.appendChild(sachDiv);
@@ -749,10 +753,14 @@ bestell.updateItems = function()
 			bestell.sachInput1 = bestell.createSachSelect(inputSize, sach[ 0 ]);
 			bestell.sachInput2 = bestell.createSachSelect(inputSize, sach[ 1 ]);
 			bestell.sachInput3 = bestell.createSachSelect(inputSize, sach[ 2 ]);
+			bestell.sachInput4 = bestell.createSachSelect(inputSize, sach[ 3 ]);
+			bestell.sachInput5 = bestell.createSachSelect(inputSize, sach[ 4 ]);
 			
 			sachDiv.appendChild(bestell.sachInput1);
 			sachDiv.appendChild(bestell.sachInput2);
 			sachDiv.appendChild(bestell.sachInput3);
+			sachDiv.appendChild(bestell.sachInput4);
+			sachDiv.appendChild(bestell.sachInput5);
 		}
 		else
 		{
