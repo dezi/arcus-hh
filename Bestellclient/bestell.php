@@ -677,6 +677,7 @@ bestell.updateItems = function()
 			dateInput.style.fontSize = inputSize;
 			dateInput.type = "text";
 			dateInput.value = item.date;
+			dateInput.placeholder = "Datum";
 			dateInput.onchange = bestell.onInputChanged;
 
 			dateDiv.appendChild(dateInput);
@@ -706,6 +707,7 @@ bestell.updateItems = function()
 			pageInput.style.fontSize = inputSize;
 			pageInput.type = "text";
 			pageInput.value = item.page;
+			pageInput.placeholder = "Seite";
 			pageInput.onchange = bestell.onInputChanged;
 			
 			pageDiv.appendChild(pageInput);
@@ -763,6 +765,7 @@ bestell.updateItems = function()
 			titleInput.style.fontSize = inputSize;
 			titleInput.type = "text";
 			titleInput.value = item.title;
+			titleInput.placeholder = "Titelanriss";
 			titleInput.onchange = bestell.onInputChanged;
 
 			titleDiv.appendChild(titleInput);
@@ -795,6 +798,7 @@ bestell.updateItems = function()
 			notesInput.style.fontSize = inputSize;
 			notesInput.type = "text";
 			notesInput.value = item.notes;
+			notesInput.placeholder = "Hinweise";
 			notesInput.onchange = bestell.onInputChanged;
 
 			notesDiv.appendChild(notesInput);
