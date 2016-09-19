@@ -3,6 +3,8 @@
 include("json.php");
 include("config.php");
 
+date_default_timezone_set("Europe/Berlin");
+
 function getQuery($name)
 {
 	return isset($_GET[ $name ]) ? $_GET[ $name ] : null;
@@ -31,7 +33,18 @@ function sendftp()
 			{
 				$data = json_decdat(file_get_contents($jobfile));
 				
-				$result = generateXML($xmlfile, $data, $user);
+				$xmlstring = generateXML($xmlfile, $data, $user);
+				
+				$conf = $GLOBALS[ "benutzer" ][ $user ];
+				
+				if (isset($conf[ "ftp" ]))
+				{
+					$ftpurl = "ftp://" . $conf[ "ftp" ] . "/" . $jobname . ".xml";
+					
+					$written = file_put_contents($ftpurl, $xmlstring);
+			
+					$result = ($written == strlen($xmlstring));
+				}
 			}
 		}
 	}		
@@ -228,9 +241,11 @@ function generateXML($xmlfile, $job, $user)
 	
 	$xml[] = "</bestell>\n";
 
-	file_put_contents($xmlfile, implode("\r\n", $xml) . "\r\n");
+	$xmlstring = implode("\r\n", $xml) . "\r\n";
 	
-	return false;
+	file_put_contents($xmlfile, $xmlstring);
+	
+	return $xmlstring;
 }
 
 sendftp();
