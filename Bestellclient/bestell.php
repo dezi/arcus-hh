@@ -251,6 +251,18 @@ bestell.addJob = function()
 	job.name = bestell.fullDateString(job.date);
 	job.items = [];
 
+	for (var inx = 0; inx < bestell.context.jobs.length; inx++)
+	{
+		if (bestell.context.jobs[ inx ].name == job.name)
+		{
+			alert("Dieser Job ist schon vorhanden.\n\n"
+					+ "Bitte warte Sie eine Minute, "
+					+ "bevor Sie einen weiteren Job anlegen");
+					
+			return;
+		}
+	}
+	
 	bestell.context.jobs.unshift(job);
 	bestell.selectedJob = 0;
 	bestell.selectedItem = -1;
@@ -383,7 +395,9 @@ bestell.sendJob = function(event)
 	var jobIndex = event.target.jobIndex;
 	var job = bestell.context.jobs[ jobIndex ];
 	
-	if (confirm("Wollen Sie diesen Auftrag versenden?\n\n" + job.name))
+	var deltag = bestell.fullDateHuman(job.date);
+	
+	if (confirm("Wollen Sie diesen Auftrag versenden?\n\n" + deltag))
 	{
 		bestell.sendftpRemoteJob(job);
 	}
@@ -396,7 +410,9 @@ bestell.removeJob = function(event)
 	var jobIndex = event.target.jobIndex;
 	var job = bestell.context.jobs[ jobIndex ];
 	
-	if (confirm("Wollen Sie diesen Auftrag löschen?\n\n" + job.name))
+	var deltag = bestell.fullDateHuman(job.date);
+	
+	if (confirm("Wollen Sie diesen Auftrag löschen?\n\n" + deltag))
 	{
 		bestell.context.jobs.splice(jobIndex, 1);
 		
