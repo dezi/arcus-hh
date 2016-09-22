@@ -88,7 +88,7 @@ bestell.createHeader = function()
 
 bestell.unselect = function(elem)
 {
-	if (navigator.userAgent && (navigator.userAgent.indexOf("MSIE") === null))
+	if (navigator.userAgent && (navigator.userAgent.indexOf("MSIE") < 0))
 	{
 		elem.style.setProperty( "-webkit-touch-callout", "none");
 		elem.style.setProperty( "-webkit-user-select", "none");
