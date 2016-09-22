@@ -88,17 +88,20 @@ bestell.createHeader = function()
 
 bestell.unselect = function(elem)
 {
-	elem.style.setProperty( "-webkit-touch-callout", "none");
-    elem.style.setProperty( "-webkit-user-select", "none");
-    elem.style.setProperty( "-khtml-user-select", "none");
-    elem.style.setProperty( "-moz-user-select", "none");
-    elem.style.setProperty( "-ms-user-select", "none");
-    elem.style.setProperty( "-user-select", "none");
+	if (navigator.userAgent && (navigator.userAgent.indexOf("MSIE") === null))
+	{
+		elem.style.setProperty( "-webkit-touch-callout", "none");
+		elem.style.setProperty( "-webkit-user-select", "none");
+		elem.style.setProperty( "-khtml-user-select", "none");
+		elem.style.setProperty( "-moz-user-select", "none");
+		elem.style.setProperty( "-ms-user-select", "none");
+		elem.style.setProperty( "-user-select", "none");
+    }
 }
 
 bestell.createJobs = function()
 {
-	bestell.contDiv.innerHTML = null;
+	bestell.contDiv.innerHTML = "";
 	
 	var centerDiv = document.createElement("center");
 	bestell.unselect(centerDiv);
@@ -212,10 +215,10 @@ bestell.createJobs = function()
 
 bestell.addItem = function()
 {
-	if (! bestell.hasOwnProperty("selectedJob")) return;
+	if (bestell.selectedJob == null) return;
 
 	var job = bestell.context.jobs[ bestell.selectedJob ];
-	if (! job.hasOwnProperty("items")) job.items = [];
+	if (! job.items) job.items = [];
 	
 	var item = {};
 	
@@ -318,7 +321,10 @@ bestell.updateRemoteItem = function(mode, job, item)
 
 bestell.selectItem = function(event)
 {
-	if (! bestell.hasOwnProperty("selectedJob")) return;
+	event = event || window.event;
+	if (! event.target) event.target = event.srcElement;
+	
+	if (bestell.selectedJob == null) return;
 	var job = bestell.context.jobs[ bestell.selectedJob ];
 
 	var target = event.target;
@@ -330,7 +336,7 @@ bestell.selectItem = function(event)
 	
 	console.log("bestell.selectItem: " + event.target.nodeName);
 	
-	while (target && ! target.hasOwnProperty("itemIndex"))
+	while (target && (target.itemIndex == null))
 	{
 		target = target.parentNode;
 	}
@@ -345,11 +351,14 @@ bestell.selectItem = function(event)
 
 bestell.selectJob = function(event)
 {
+	event = event || window.event;
+	if (! event.target) event.target = event.srcElement;
+
 	var target = event.target;
 	
 	if (target.nodeName == "IMG") return;
 
-	while (target && ! target.hasOwnProperty("jobIndex"))
+	while (target && (target.jobIndex == null))
 	{
 		target = target.parentNode;
 	}
@@ -364,9 +373,12 @@ bestell.selectJob = function(event)
 
 bestell.removeItem = function(event)
 {
-	event.preventDefault();
+	event = event || window.event;
+	if (! event.target) event.target = event.srcElement;
 
-	if (! bestell.hasOwnProperty("selectedJob")) return;
+	(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
+
+	if (bestell.selectedJob == null) return;
 	var job = bestell.context.jobs[ bestell.selectedJob ];
 
 	var itemIndex = event.target.itemIndex;
@@ -374,7 +386,7 @@ bestell.removeItem = function(event)
 	
 	var deltag = item.source + " " + item.date + " " + item.page + "\n\n" + item.title;
 	
-	if ((deltag.trim() == "") || confirm("Wollen Sie diesen Artikel löschen?\n\n" + deltag))
+	if ((deltag.replace(/^\s+|\s+$/g,"") == "") || confirm("Wollen Sie diesen Artikel löschen?\n\n" + deltag))
 	{
 		delete bestell.selectedItem;
 
@@ -389,7 +401,10 @@ bestell.removeItem = function(event)
 
 bestell.sendJob = function(event)
 {
-	event.preventDefault();
+	event = event || window.event;
+	if (! event.target) event.target = event.srcElement;
+
+	(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
 
 	var jobIndex = event.target.jobIndex;
 	var job = bestell.context.jobs[ jobIndex ];
@@ -404,7 +419,10 @@ bestell.sendJob = function(event)
 
 bestell.removeJob = function(event)
 {
-	event.preventDefault();
+	event = event || window.event;
+	if (! event.target) event.target = event.srcElement;
+
+	(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
 
 	var jobIndex = event.target.jobIndex;
 	var job = bestell.context.jobs[ jobIndex ];
@@ -481,7 +499,8 @@ bestell.validateItem = function(item)
 		bestell.dateInput.value = item.date;
 	}
 	
-	item.ok = item.source.length && item.date.length && item.page.length && item.title.length;
+	item.ok = item.source.length && item.date.length && item.page.length 
+				&& item.title.length && item.sach.length;
 
 	var date = item.date.split(".");
 	var dateok = false;
@@ -524,10 +543,13 @@ bestell.validateItem = function(item)
 
 bestell.onInputChanged = function(event)
 {
-	if (! bestell.hasOwnProperty("selectedJob")) return;
+	event = event || window.event;
+	if (! event.target) event.target = event.srcElement;
+
+	if (bestell.selectedJob == null) return;
 	var job = bestell.context.jobs[ bestell.selectedJob ];
 
-	if (! bestell.hasOwnProperty("selectedItem")) return;
+	if (bestell.selectedItem == null) return;
 	var item = job.items[ bestell.selectedItem ];
 	
 	item.source = bestell.sourceInput.value;
@@ -563,11 +585,11 @@ bestell.onInputChanged = function(event)
 bestell.updateItems = function()
 {
 	var itemsContent = bestell.itemsContent;
-	itemsContent.innerHTML = null;
+	itemsContent.innerHTML = "";
 
-	if (! bestell.hasOwnProperty("selectedJob")) return;
+	if (bestell.selectedJob == null) return;
 	var job = bestell.context.jobs[ bestell.selectedJob ];
-	if (! job.hasOwnProperty("items")) job.items = [];
+	if (! job.items) job.items = [];
 	
 	bestell.itemsNew.style.display = job.send ? "none" : "block";
 	
@@ -851,7 +873,7 @@ bestell.updateItems = function()
 bestell.updateJobs = function()
 {
 	var jobsContent = bestell.jobsContent;
-	jobsContent.innerHTML = null;
+	jobsContent.innerHTML = "";
 	
 	var jobs = bestell.context.jobs;
 	
@@ -924,8 +946,8 @@ bestell.updateJobs = function()
 
 bestell.createLogin = function()
 {
-	bestell.userDiv.innerHTML = null;
-	bestell.contDiv.innerHTML = null;
+	bestell.userDiv.innerHTML = "";
+	bestell.contDiv.innerHTML = "";
 	
 	var centerDiv = document.createElement("center");
 	centerDiv.style.padding = "20px";
@@ -949,7 +971,7 @@ bestell.createLogin = function()
 	userInput.style.fontSize = "24px"; 
 	userInput.type = "text"; 
 	userInput.name = "user"; 
-	userInput.value = "Test-Kappa"; 
+	userInput.value = ""; 
 	userInput.size = 10; 
 	userDiv.appendChild(userInput);
 	
@@ -969,7 +991,7 @@ bestell.createLogin = function()
 	passInput.style.fontSize = "24px"; 
 	passInput.type = "password"; 
 	passInput.name = "password"; 
-	passInput.value = "test"; 
+	passInput.value = ""; 
 	passInput.size = 10; 
 	passDiv.appendChild(passInput);
 	
@@ -1052,7 +1074,7 @@ bestell.fullDateHuman = function(timestamp)
 bestell.displayLogin = function()
 {
 	var userDiv = bestell.userDiv;
-	userDiv.innerHTML = null;
+	userDiv.innerHTML = "";
 	
 	var userText = document.createElement("div");
 	userText.innerHTML = bestell.context.user;
@@ -1086,8 +1108,8 @@ bestell.loginClick = function()
 bestell.logoutClick = function()
 {
 	localStorage.removeItem("context");
-	bestell.context = null;
 	
+	delete bestell.context;
 	delete bestell.selectedJob;
 	delete bestell.selectedItem;
 	
@@ -1167,7 +1189,7 @@ bestell.requestJavascript = function(url)
     script.src = url;
 
     head.insertBefore(script, head.firstChild);
-    head.removeChild(script);
+    //head.removeChild(script);
 }
 
 bestell.saveContext = function()
