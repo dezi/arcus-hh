@@ -43,7 +43,7 @@ function sendftp()
 					
 					$written = file_put_contents($ftpurl, $xmlstring);
 			
-					$result = ($written == strlen($xmlstring));
+					$result = ($written > 10);
 				}
 			}
 		}
@@ -74,6 +74,21 @@ function alphaOnlyUpper($str)
 	return $new;
 }
 
+function numberOnlyUpper($str)
+{	
+	$new = "";
+	
+	for ($inx = 0; $inx < strlen($str); $inx++)
+	{
+		if ((ord("0") <= ord($str[ $inx ])) && (ord($str[ $inx ]) <= ord("9")))
+		{
+			$new .= $str[ $inx ];
+		}
+	}
+	
+	return $new;
+}
+
 function artikelKey($item)
 {
 	//
@@ -87,7 +102,7 @@ function artikelKey($item)
 	$key .= substr($item[ "date" ], 3, 2);
 	$key .= substr($item[ "date" ], 0, 2);
 	$key .= "-";
-	$key .= str_pad($item[ "page" ], 5, "0", STR_PAD_LEFT);
+	$key .= str_pad(numberOnlyUpper($item[ "page" ]), 5, "0", STR_PAD_LEFT);
 	$key .= "-";
 	$key .= str_pad(alphaOnlyUpper($item[ "title" ]), 43, "+", STR_PAD_RIGHT);
 
